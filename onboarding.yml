@@ -1,18 +1,41 @@
+logging:
+  level:
+    ROOT: INFO
+    org.hibernate.SQL: DEBUG
+    kz.hr.onboarding: DEBUG
+
+# configure actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mapping,bus-refresh,bus-env,health,circuitbreakerevents,retry
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+
+# configure spring
 spring:
   application:
-    name: RELOCATION-SERVICE
+    name: ONBOARDING-SERVICE
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/onboarding
+    username: onboarding
   jpa:
-    open-in-view: false
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
-    change-log: db.changelog/changelog.xml
+    change-log: db.changelog/master.xml
+    enabled: false
 
+# configure circuitbreaker
 resilience4j:
   circuitbreaker:
     circuit-breaker-aspect-order: 1
@@ -26,7 +49,7 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         event-consumer-buffer-size: 20
         ignore-exceptions:
-          - by.javaguru.jdmik7.relocationservice.api.exception.ServiceBadRequestException
+          - kz.hr.onboardingservice.service.exceptions.ServiceBadRequestException
     instances:
       accounting-service:
         base-config: default
@@ -41,7 +64,7 @@ resilience4j:
         max-attempts: 3
         wait-duration: 10s
         ignore-exceptions:
-          - by.javaguru.jdmik7.relocationservice.api.exception.ServiceBadRequestException
+          - kz.hr.onboardingservice.service.exceptions.ServiceBadRequestException
     instances:
       accounting-service:
         base-config: default
@@ -49,3 +72,6 @@ resilience4j:
         base-config: default
       profiler-service:
         base-config: default
+
+server:
+  port: 0
