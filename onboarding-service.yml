@@ -21,7 +21,7 @@ management:
 # configure spring
 spring:
   application:
-    name: ONBOARDING-SERVICE
+    name: onboarding-service
   datasource:
     url: jdbc:postgresql://localhost:5432/onboarding
     username: onboarding
