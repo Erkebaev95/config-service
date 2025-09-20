@@ -1,0 +1,36 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 100
+        failure-rate-threshold: 30
+        minimum-number-of-calls: 20
+        wait-duration-in-open-state: 30s
+        permitted-number-of-calls-in-half-open-state: 10
+        event-consumer-buffer-size: 100
+        ignore-exceptions:
+          - by.javaguru.jdmik7.relocationservice.api.exception.ServiceBadRequestException
+    instances:
+      accounting-service:
+        base-config: default
+      security-service:
+        base-config: default
+      profiler-service:
+        base-config: default
+
+  retry:
+    configs:
+      default:
+        max-attempts: 5
+        wait-duration: 5s
+        ignore-exceptions:
+          - by.javaguru.jdmik7.relocationservice.api.exception.ServiceBadRequestException
+    instances:
+      accounting-service:
+        base-config: default
+      security-service:
+        base-config: default
+      profiler-service:
+        base-config: default
+      retry-aspect-order: 2
